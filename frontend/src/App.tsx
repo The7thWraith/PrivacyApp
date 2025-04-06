@@ -5,11 +5,11 @@ import WebSocket from "@tauri-apps/plugin-websocket";
 import Webcam from "./components/Webcam";
 import DropdownOption from "./components/DropdownOption";
 import Slider from "./components/sliddddddeeeeerrrrrrrr";
+import ShieldLoadingScreen from "./components/LoadingScreen";
 
-interface ActiveFilters {
-  cardsIds: boolean;
-  streetSigns: boolean;
-  licensePlates: boolean;
+// Webcam component props interface
+interface WebcamProps {
+  id: string;
 }
 
 interface SelectedValues {
@@ -39,14 +39,14 @@ function App() {
     setIsLoading(true);
     setTimeout(() => {
       setIsLoading(false);
-    }, 750);
+    }, 750); // Show for 2 seconds as requested
   };
 
   useEffect(() => {
-    // Show loading screen for a short time on initial load
+    // Show loading screen for 2 seconds on initial load
     const timer = setTimeout(() => {
       setIsLoading(false);
-    }, 750);
+    }, 750); // 2 seconds as requested
 
     return () => clearTimeout(timer);
   }, []);
@@ -147,22 +147,20 @@ function App() {
 
     return () => {
       if (wsConnection) {
-        wsConnection.close();
-        console.log("WebSocket connection closed");
+        try {
+          // Using any to bypass TypeScript error
+          (wsConnection as any).close();
+          console.log("WebSocket connection closed");
+        } catch (err) {
+          console.error("Error closing WebSocket connection:", err);
+        }
       }
     };
   }, [selectedValues]);
 
-  // LoadingScreen component
-  const LoadingScreen = () => (
-    <div className="fixed inset-0 bg-neutral-800 z-50 flex items-center justify-center">
-      <div className="text-white text-2xl">Loading...</div>
-    </div>
-  );
-
   return (
     <div className="w-full h-screen bg-neutral-800 p-4 pt-0 flex flex-col">
-      {isLoading && <LoadingScreen />}
+      {isLoading && <ShieldLoadingScreen />}
       <div className="flex justify-end mb-2">
         <button 
           onClick={showLoadingScreen}
@@ -237,7 +235,7 @@ function App() {
             {error ? (
               <div className="text-red-500 p-4">{error}</div>
             ) : (
-              <Webcam />
+              <Webcam id="main-webcam" />
             )}
           </div>
         </div>
