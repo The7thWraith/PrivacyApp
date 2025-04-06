@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { useState } from "react";
 import "./App.css";
 import WebSocket from "@tauri-apps/plugin-websocket";
-import Webcam from "./Webcam";
+import Webcam from "./components/Webcam";
 import DropdownOption from "./components/DropdownItem";
 import Slider from "./components/sliddddddeeeeerrrrrrrr";
 
@@ -100,7 +100,7 @@ function App() {
 			}
 		};
 
-		sendSettings();
+		// sendSettings();
 		requestCameraAccess();
 
 		return () => {
@@ -186,7 +186,14 @@ function App() {
 						{error ? (
 							<div className="text-red-500 p-4">{error}</div>
 						) : (
-							<Webcam />
+							<Webcam
+								id={
+									cameras.find(
+										(cam) =>
+											cam.label === selectedValues.camera
+									)?.deviceId
+								}
+							/>
 						)}
 					</div>
 				</div>

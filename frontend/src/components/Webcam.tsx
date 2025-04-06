@@ -1,15 +1,18 @@
 import React, { useRef, useState, useEffect } from "react";
+import Button from "./Button";
 
 interface WebcamProps {
 	width?: number;
 	height?: number;
 	facingMode?: string;
+	id: string | undefined;
 }
 
 const Webcam: React.FC<WebcamProps> = ({
 	width = 640,
 	height = 480,
-	facingMode = "user"
+	facingMode = "user",
+	id
 }) => {
 	const videoRef = useRef<HTMLVideoElement>(null);
 	const [isStreaming, setIsStreaming] = useState(false);
@@ -21,7 +24,8 @@ const Webcam: React.FC<WebcamProps> = ({
 				video: {
 					width,
 					height,
-					facingMode
+					facingMode,
+					deviceId: id
 				},
 				audio: false
 			});
@@ -65,24 +69,38 @@ const Webcam: React.FC<WebcamProps> = ({
 		};
 	}, [isStreaming]);
 
+	useEffect(() => {
+		if (!isStreaming) return;
+
+		if (isStreaming) {
+			stopWebcam();
+		}
+
+		if (id) {
+			startWebcam();
+		}
+	}, [id]);
+
 	return (
-		<div className="webcam-container">
-			<video
-				ref={videoRef}
-				width={width}
-				height={height}
-				muted
-				playsInline
-				style={{ display: isStreaming ? "block" : "none" }}
-			/>
+		<div className="h-full w-full flex flex-col justify-between">
+			<div className="flex-grow flex items-center justify-center">
+				<video
+					ref={videoRef}
+					width={width}
+					height={height}
+					muted
+					playsInline
+					style={{ display: isStreaming ? "block" : "none" }}
+				/>
+			</div>
 
 			{error && <div className="error-message">{error}</div>}
 
-			<div className="controls">
+			<div className="pb-4 flex justify-center">
 				{!isStreaming ? (
-					<button onClick={startWebcam}>Start Camera</button>
+					<Button onClick={startWebcam}>Start Camera</Button>
 				) : (
-					<button onClick={stopWebcam}>Stop Camera</button>
+					<Button onClick={stopWebcam}>Stop Camera</Button>
 				)}
 			</div>
 		</div>
