@@ -64,7 +64,9 @@ const Webcam: React.FC<WebcamProps> = ({
 		// Always stop any existing streams first
 		stopAllTracks();
 		
-		if (step === "initial") setStep("streaming");
+		// Ensure we're in streaming state
+		setStep("streaming");
+		setError(null);
 
 		try {
 			console.log("Requesting camera access...");
@@ -103,8 +105,6 @@ const Webcam: React.FC<WebcamProps> = ({
 					}
 				};
 			}
-
-			setError(null);
 		} catch (err) {
 			console.error("Failed to access webcam:", err);
 			setError(
@@ -145,9 +145,24 @@ const Webcam: React.FC<WebcamProps> = ({
 		}
 	};
 
-	const retakeImage = () => {
+	const retakeImage = async () => {
+		// Ensure we completely reset the state before restarting
 		setCapturedImage(null);
-		startWebcam();
+		
+		try {
+			// Explicitly set step to initial to reset everything
+			setStep("initial");
+			
+			// Add a small delay to ensure state is reset
+			await new Promise(resolve => setTimeout(resolve, 100));
+			
+			// Start the webcam
+			await startWebcam();
+		} catch (err) {
+			console.error("Failed to restart webcam:", err);
+			setError("Could not restart the webcam.");
+			setStep("initial");
+		}
 	};
 
 	const continueSteps = () => {
