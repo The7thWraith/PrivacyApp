@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import ShieldIcon from "../assets/shield.svg";
 
-function LoadingScreen() {
+function LoadingScreen({ onFinished }) {
   const [opacity, setOpacity] = useState(0);
   const [lineWidth, setLineWidth] = useState(0);
 
@@ -13,16 +13,26 @@ function LoadingScreen() {
     }, 100);
     
     // Line expand animation
-    setLineWidth(0);
     const lineTimer = setTimeout(() => {
       setLineWidth(80);
     }, 500);
     
+    const fadeOutTimer = setTimeout(() => {
+      setOpacity(0);
+      setLineWidth(0);
+    }, 3000);
+    
+    const finishTimer = setTimeout(() => {
+      if (onFinished) onFinished();
+    }, 4000);
+    
     return () => {
       clearTimeout(fadeInTimer);
       clearTimeout(lineTimer);
+      clearTimeout(fadeOutTimer);
+      clearTimeout(finishTimer);
     };
-  }, []);
+  }, [onFinished]);
   
   return (
     <div 
@@ -48,7 +58,7 @@ function LoadingScreen() {
           style={{
             width: `${lineWidth}%`,
             transition: "width 1.2s ease-in-out",
-            transitionDelay: "0.4s"
+            transitionDelay: opacity === 0 && lineWidth === 0 ? "0s" : "0.4s"
           }}
         />
       </div>
@@ -57,3 +67,4 @@ function LoadingScreen() {
 }
 
 export default LoadingScreen;
+

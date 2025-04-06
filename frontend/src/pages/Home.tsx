@@ -82,9 +82,11 @@ function Home() {
 
 	const showLoadingScreen = () => {
 		setShowLoading(true);
-		setTimeout(() => {
-			setShowLoading(false);
-		}, 3000);
+		// Loading screen component now handles its own timing and will call this callback
+	};
+
+	const hideLoadingScreen = () => {
+		setShowLoading(false);
 	};
 
 	useEffect(() => {
@@ -154,7 +156,7 @@ function Home() {
 
 	return (
 		<div className="w-full h-screen bg-neutral-800 p-4 pt-0 flex flex-col">
-			{showLoading && <LoadingScreen />}
+			{showLoading && <LoadingScreen onFinished={hideLoadingScreen} />}
 			<div className="flex flex-1 overflow-hidden">
 				<div className="w-2/5 relative">
 					<div className="absolute top-0 bottom-0 left-0 right-[-20px] pt-5 flex flex-col overflow-y-scroll">
@@ -298,3 +300,4 @@ function Home() {
 }
 
 export default Home;
+
