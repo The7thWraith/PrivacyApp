@@ -15,16 +15,16 @@ function LoadingScreen({ onFinished }) {
     // Line expand animation
     const lineTimer = setTimeout(() => {
       setLineWidth(80);
-    }, 500);
+    }, 300);
     
     const fadeOutTimer = setTimeout(() => {
       setOpacity(0);
       setLineWidth(0);
-    }, 3000);
+    }, 2000);
     
     const finishTimer = setTimeout(() => {
       if (onFinished) onFinished();
-    }, 4000);
+    }, 2500);
     
     return () => {
       clearTimeout(fadeInTimer);
@@ -39,7 +39,7 @@ function LoadingScreen({ onFinished }) {
       className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-neutral-800 bg-opacity-90"
       style={{
         opacity: opacity,
-        transition: "opacity 0.8s ease-in-out"
+        transition: "opacity 0.5s ease-in-out"
       }}
     >
       <div className="flex flex-col items-center justify-center w-full mt-[-100px]">
@@ -50,15 +50,15 @@ function LoadingScreen({ onFinished }) {
           style={{
             opacity: opacity,
             transform: `scale(${opacity})`,
-            transition: "opacity 0.8s ease-in-out, transform 0.8s ease-out"
+            transition: "opacity 0.5s ease-in-out, transform 0.5s ease-out"
           }}
         />
         <div 
           className="h-px bg-white"
           style={{
             width: `${lineWidth}%`,
-            transition: "width 1.2s ease-in-out",
-            transitionDelay: opacity === 0 && lineWidth === 0 ? "0s" : "0.4s"
+            transition: "width 0.8s ease-in-out",
+            transitionDelay: opacity === 0 && lineWidth === 0 ? "0s" : "0.3s"
           }}
         />
       </div>
