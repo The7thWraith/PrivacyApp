@@ -8,6 +8,7 @@ import Slider from "./components/sliddddddeeeeerrrrrrrr";
 
 function App() {
 	const [openDropdown, setOpenDropdown] = useState(null);
+	const [firstLoad, setFirstLoad] = useState(true);
 	const [alreadyOpen, setAlreadyOpen] = useState(false);
 	const [cameras, setCameras] = useState<MediaDeviceInfo[]>([]);
 	const [error, setError] = useState("");
@@ -63,10 +64,13 @@ function App() {
 					setError("No cameras detected on your device");
 				} else {
 					setCameras(videoDevices);
-					setSelectedValues({
-						...selectedValues,
-						camera: videoDevices[0].label
-					});
+					if (firstLoad) {
+						setSelectedValues({
+							...selectedValues,
+							camera: videoDevices[0].label
+						});
+						setFirstLoad(false);
+					}
 				}
 			} catch (err) {
 				console.error("Error accessing camera:", err);
@@ -128,9 +132,7 @@ function App() {
 					<DropdownOption
 						id="camera"
 						label="Camera"
-						value={
-							cameras.length > 0 ? cameras[0].label : "Loading..."
-						}
+						value={selectedValues.camera}
 						options={cameras.map(
 							(camera) => camera.label || "Unnamed Camera"
 						)}
