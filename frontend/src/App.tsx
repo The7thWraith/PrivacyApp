@@ -4,7 +4,7 @@ import "./App.css";
 import WebSocket from "@tauri-apps/plugin-websocket";
 import Webcam from "./Webcam";
 import DropdownOption from "./components/DropdownItem";
-import Slider from "./components/sliddddddeeeeerrrrrrrr"
+import Slider from "./components/sliddddddeeeeerrrrrrrr";
 
 function App() {
 	const [openDropdown, setOpenDropdown] = useState(null);
@@ -63,6 +63,10 @@ function App() {
 					setError("No cameras detected on your device");
 				} else {
 					setCameras(videoDevices);
+					setSelectedValues({
+						...selectedValues,
+						camera: videoDevices[0].label
+					});
 				}
 			} catch (err) {
 				console.error("Error accessing camera:", err);
@@ -124,7 +128,9 @@ function App() {
 					<DropdownOption
 						id="camera"
 						label="Camera"
-						value={selectedValues.camera}
+						value={
+							cameras.length > 0 ? cameras[0].label : "Loading..."
+						}
 						options={cameras.map(
 							(camera) => camera.label || "Unnamed Camera"
 						)}
