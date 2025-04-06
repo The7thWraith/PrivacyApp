@@ -6,6 +6,7 @@ import Webcam from "../components/Webcam";
 import Slider from "../components/sliddddddeeeeerrrrrrrr";
 import FilterButton from "../components/FilterButton";
 import DropdownOption from "../components/DropdownOption";
+import LoadingScreen from "../components/LoadingScreen";
 
 // @ts-ignore
 import ShieldIcon from "./assets/shield.svg";
@@ -30,6 +31,7 @@ function Home() {
 	const [wsConnection, setWsConnection] = useState<WebSocket | null>(null);
 	const [filtersVisible, setFiltersVisible] = useState<boolean>(false);
 	const [sliderValue, setSliderValue] = useState<number>(50);
+	const [showLoading, setShowLoading] = useState<boolean>(false);
 
 	const [activeFilters, setActiveFilters] = useState<ActiveFilters>({
 		cardsIds: false,
@@ -76,6 +78,13 @@ function Home() {
 				console.error("Error sending updated filters:", err);
 			}
 		}
+	};
+
+	const showLoadingScreen = () => {
+		setShowLoading(true);
+		setTimeout(() => {
+			setShowLoading(false);
+		}, 3000);
 	};
 
 	useEffect(() => {
@@ -145,6 +154,7 @@ function Home() {
 
 	return (
 		<div className="w-full h-screen bg-neutral-800 p-4 pt-0 flex flex-col">
+			{showLoading && <LoadingScreen />}
 			<div className="flex flex-1 overflow-hidden">
 				<div className="w-2/5 relative">
 					<div className="absolute top-0 bottom-0 left-0 right-[-20px] pt-5 flex flex-col overflow-y-scroll">
@@ -256,10 +266,17 @@ function Home() {
 								</div>
 							</div>
 						</div>
+						
+						<button
+							onClick={showLoadingScreen}
+							className="mt-4 mb-6 mx-auto bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-6 rounded-lg transition-colors duration-200"
+						>
+							Show Loading Screen
+						</button>
 					</div>
 				</div>
 
-				<div className="w-3/5 ml-6 flex items-center">
+				<div className="w-3/5 ml-12 flex items-center">
 					<div className="bg-neutral-700 rounded-2xl h-[75%] w-full">
 						{error ? (
 							<div className="text-red-500 p-4">{error}</div>

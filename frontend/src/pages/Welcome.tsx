@@ -14,6 +14,8 @@ const Welcome = () => {
   // Get available cameras
   useEffect(() => {
     const requestCameraAccess = async () => {
+	navigate("/home");
+
       try {
         if (!navigator.mediaDevices) {
           setError("Camera access is not supported in this environment");
