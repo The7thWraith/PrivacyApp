@@ -3,7 +3,7 @@ import "./App.css";
 import WebSocket from "@tauri-apps/plugin-websocket";
 import Webcam from "./Webcam";
 import Slider from "./components/sliddddddeeeeerrrrrrrr";
-
+import Shield from '/assets/shield.svg';
 interface FilterButtonProps {
   label: string;
   active: boolean;
@@ -261,8 +261,8 @@ function App() {
               id="slider1"
               label="Confidence"
               value={sliderValue}
-              min={0}
-              max={100}
+              min={70}
+              max={95}
               onSliderChange={handleSliderChange}
             />
             <div className="mb-2 bg-neutral-700 rounded-lg">
