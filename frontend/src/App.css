@@ -13,7 +13,77 @@ a:hover {
 h1 {
 	text-align: center;
 }
+/* Add this to your App.css file */
 
+/* Hide scrollbar for Chrome, Safari and Opera */
+/* Add this to your App.css file */
+
+/* Custom scrollbar styling for desktop app */
+.custom-scrollbar {
+	/* Make scrollbar transparent */
+	scrollbar-width: thin;
+	scrollbar-color: transparent transparent;
+    }
+    
+    /* For WebKit-based desktop renderers (like in Tauri with WebView) */
+    .custom-scrollbar::-webkit-scrollbar {
+	width: 0px; /* Very thin scrollbar */
+    }
+    /* Add this to your src/App.css or src/index.css file */
+/* Add this to your src/App.css or src/index.css file */
+
+/* Hide scrollbars by masking the right edge */
+.mask-scrollbar {
+	overflow-y: scroll;
+	-webkit-mask-image: linear-gradient(to right, black calc(100% - 12px), transparent 100%);
+	mask-image: linear-gradient(to right, black calc(100% - 12px), transparent 100%);
+    }
+    
+    /* For browsers not supporting mask-image */
+    @supports not (mask-image: linear-gradient(to right, black, transparent)) {
+	.mask-scrollbar {
+	  padding-right: 20px; /* Add extra padding to push scrollbar out of view */
+	  box-sizing: content-box; /* Ensure padding doesn't affect width */
+	}
+    }
+/* Completely hide scrollbars for Tauri/desktop applications */
+.hide-scrollbar {
+	-ms-overflow-style: none !important; /* IE and Edge */
+	scrollbar-width: none !important; /* Firefox */
+    }
+    
+    /* For webkit-based engines */
+    .hide-scrollbar::-webkit-scrollbar {
+	display: none !important;
+	width: 0 !important;
+	height: 0 !important;
+	background: transparent !important;
+    }
+    ::-webkit-scrollbar{
+	display:none;
+    }
+    /* Specifically target scrollbar pieces to ensure complete hiding */
+    .hide-scrollbar::-webkit-scrollbar-thumb,
+    .hide-scrollbar::-webkit-scrollbar-track,
+    .hide-scrollbar::-webkit-scrollbar-button {
+	width: 0 !important;
+	height: 0 !important;
+	background-color: transparent !important;
+	display: none !important;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+	background: transparent;
+    }
+    
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+	background-color: transparent;
+	border: none;
+    }
+    
+    /* Ensure scrolling still works */
+    .custom-scrollbar {
+	overflow-y: auto;
+    }
 /* input,
 button {
 	border-radius: 8px;
