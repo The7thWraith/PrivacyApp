@@ -82,7 +82,7 @@ function App() {
 	const [wsConnection, setWsConnection] = useState<any>(null);
 
 	const [selectedValues, setSelectedValues] = useState({
-		camera: "WebCam 360",
+		camera: "Loading...",
 		blur: "Soft",
 		border: "None",
 		privacyLevel: "Silent"
@@ -138,38 +138,38 @@ function App() {
 			}
 		};
 
-    const sendSettings = async () => {
-      try {
-        console.log("Connecting to WebSocket...");
-        const ws = await WebSocket.connect('wss://example.com');
-        
-        setWsConnection(ws);
-        
-        // Send initial message
-        await ws.send(selectedValues.toString());
-        
-        // Set up message listener
-        ws.addListener((message) => {
-          console.log("Received message from server:", message);
-        });
-        
-        console.log("WebSocket connection established successfully");
-      } catch (err) {
-        console.error("Error connecting to WebSocket:", err);
-        setError(`Failed to connect to video server: ${err.message}`);
-      }
-    };
+		const sendSettings = async () => {
+			try {
+				console.log("Connecting to WebSocket...");
+				const ws = await WebSocket.connect("wss://example.com");
 
-    sendSettings();
-    requestCameraAccess();
-    
-    return () => {
-      if (wsConnection) {
-        wsConnection.close();
-        console.log("WebSocket connection closed");
-      }
-    };
-  }, [selectedValues]);
+				setWsConnection(ws);
+
+				// Send initial message
+				await ws.send(selectedValues.toString());
+
+				// Set up message listener
+				ws.addListener((message) => {
+					console.log("Received message from server:", message);
+				});
+
+				console.log("WebSocket connection established successfully");
+			} catch (err) {
+				console.error("Error connecting to WebSocket:", err);
+				setError(`Failed to connect to video server: ${err.message}`);
+			}
+		};
+
+		sendSettings();
+		requestCameraAccess();
+
+		return () => {
+			if (wsConnection) {
+				wsConnection.close();
+				console.log("WebSocket connection closed");
+			}
+		};
+	}, [selectedValues]);
 
 	return (
 		<div className="w-full h-screen bg-neutral-800 p-4 pt-0 flex flex-col">
@@ -186,11 +186,7 @@ function App() {
 					<DropdownOption
 						id="camera"
 						label="Camera"
-						value={
-							cameras.length > 0
-								? cameras[0].label || "Unnamed Camera"
-								: "Loading..."
-						}
+						value={selectedValues.camera}
 						options={cameras.map(
 							(camera) => camera.label || "Unnamed Camera"
 						)}
@@ -232,7 +228,11 @@ function App() {
 
 				<div className="w-3/5 ml-6 flex items-center">
 					<div className="bg-neutral-700 rounded-2xl h-[75%] w-full">
-						<Webcam />
+						{error ? (
+							<div className="text-red-500 p-4">{error}</div>
+						) : (
+							<Webcam />
+						)}
 					</div>
 				</div>
 			</div>
