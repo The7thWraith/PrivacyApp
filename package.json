@@ -1,5 +1,6 @@
 {
   "dependencies": {
-    "@tauri-apps/plugin-websocket": "^2.3.0"
+    "@tauri-apps/plugin-websocket": "^2.3.0",
+    "react-router-dom": "^7.5.0"
   }
 }
