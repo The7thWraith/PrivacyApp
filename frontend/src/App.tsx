@@ -2,8 +2,8 @@ import React, { useEffect } from "react";
 import { useState } from "react";
 import "./App.css";
 import WebSocket from "@tauri-apps/plugin-websocket";
-import Webcam from "./Webcam";
-import DropdownOption from "./components/DropdownItem";
+import Webcam from "./components/Webcam";
+import DropdownOption from "./components/DropdownOption";
 import Slider from "./components/sliddddddeeeeerrrrrrrr";
 
 function App() {
