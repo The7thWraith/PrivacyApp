@@ -34,6 +34,7 @@ function Home() {
 	const [filtersVisible, setFiltersVisible] = useState<boolean>(false);
 	const [sliderValue, setSliderValue] = useState<number>(50);
 	const [showLoading, setShowLoading] = useState<boolean>(false);
+	const [showTitleScreen, setShowTitleScreen] = useState<boolean>(true);
 
 	const [activeFilters, setActiveFilters] = useState<ActiveFilters>({
 		cardsIds: false,
@@ -92,11 +93,15 @@ function Home() {
 
 	const showLoadingScreen = () => {
 		setShowLoading(true);
-		// Loading screen component now handles its own timing and will call this callback
 	};
 
 	const hideLoadingScreen = () => {
 		setShowLoading(false);
+	};
+	
+	const handleStartApp = () => {
+		setShowTitleScreen(false);
+		setShowLoading(true);
 	};
 
 	useEffect(() => {
@@ -161,7 +166,24 @@ function Home() {
 
 	return (
 		<div className="w-full h-screen bg-neutral-800 p-4 pt-0 flex flex-col">
+			{/* Title Screen Overlay */}
+			{showTitleScreen && (
+				<div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-neutral-900 bg-opacity-95 backdrop-blur-xl">
+					<h1 className="text-white text-6xl font-bold mb-8">ECLIPSE</h1>
+					<p className="text-gray-300 text-xl mb-12">Privacy Filter System</p>
+					<button
+						onClick={handleStartApp}
+						className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-8 rounded-lg text-xl transition-colors duration-200"
+					>
+						Start
+					</button>
+				</div>
+			)}
+			
+			{/* Loading Screen */}
 			{showLoading && <LoadingScreen onFinished={hideLoadingScreen} />}
+			
+			{/* Main App Content */}
 			<div className="flex flex-1 overflow-hidden">
 				<div className="w-2/5 relative">
 					<div className="absolute top-0 bottom-0 left-0 right-[-20px] pt-5 flex flex-col overflow-y-auto pb-4">
