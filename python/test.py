@@ -2,11 +2,11 @@ from ultralytics import YOLO
 import cv2
 
 # Load the model
-model = YOLO('python/models/full_train1.pt')
+model = YOLO('python/models/best.pt')
 
 # Predict on the image
 results = model.predict(
-    source='python/data/credit_cards.v1i.yolov11/train/images/0hvCg3WrUOfRrnFgD_jpg.rf.db42ce75d3bc6e1f8616c2553addefab.jpg', 
+    source='python/cars.jpeg', 
     conf=0.005,
     save=False
 )

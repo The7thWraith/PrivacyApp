@@ -5,7 +5,7 @@ import os
 os.environ['OBJC_DISABLE_INITIALIZE_FORK_SAFETY'] = 'YES'
 
 # Load the YOLOv8 model
-model = YOLO('/Users/christophermao/Documents/GitHub/PrivacyApp/python/models/fine_tune1.pt')  # using the nano model for better performance
+model = YOLO('python/models/best.pt')  # using the nano model for better performance
 
 # Access the webcam (usually 0 for built-in webcam)
 cap = cv2.VideoCapture(0)
