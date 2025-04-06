@@ -35,8 +35,9 @@ function Home() {
 
 	const [activeFilters, setActiveFilters] = useState<ActiveFilters>({
 		cardsIds: false,
+		licensePlates: false,
 		streetSigns: false,
-		licensePlates: false
+		faces: false
 	});
 
 	const [firstLoad, setFirstLoad] = useState(true);
@@ -72,7 +73,9 @@ function Home() {
 		if (wsConnection) {
 			const settingsWithFilters = {
 				...selectedValues,
-				filters: newActiveFilters
+				filters: newActiveFilters,
+				confidence: sliderValue / 100,
+				// ignore_subject: newActiveFilters["faces"]
 			};
 			try {
 				wsConnection.send(JSON.stringify(settingsWithFilters));
@@ -201,7 +204,6 @@ function Home() {
 							onSelect={handleSelect}
 						/>
 
-					
 						<Slider
 							id="slider1"
 							label="Confidence"
@@ -258,12 +260,10 @@ function Home() {
 											toggleFilter("licensePlates")
 										}
 									/>
-										<FilterButton
+									<FilterButton
 										label="Faces"
 										active={activeFilters.faces}
-										onClick={() =>
-											toggleFilter("faces")
-										}
+										onClick={() => toggleFilter("faces")}
 									/>
 								</div>
 							</div>

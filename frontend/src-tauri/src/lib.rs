@@ -1,6 +1,14 @@
 use tauri::{command, generate_handler, WebviewWindowBuilder, WebviewUrl, TitleBarStyle};
 use serde::{Serialize, Deserialize};
 
+use std::thread;
+use std::time::Duration;
+use zmq;
+use tauri::AppHandle;
+use tauri::Emitter;
+use base64::engine::general_purpose::STANDARD as base64;
+use base64::Engine;
+
 #[derive(Serialize, Deserialize)]
 struct ZmqResponse {
     message: String,
@@ -37,6 +45,29 @@ fn send_zmq_message(message: String) -> Result<String, String> {
     }
 }
 
+fn start_zmq_receiver(app_handle: AppHandle) {
+  thread::spawn(move || {
+    let context = zmq::Context::new();
+    let subscriber = context.socket(zmq::SUB).expect("Failed to create socket");
+    subscriber.connect("tcp://127.0.0.1:5555").expect("Connect failed");
+    subscriber.set_subscribe(b"IMAGE").expect("Subscribe failed");
+
+    loop {
+        let _topic = subscriber.recv_string(0).unwrap();
+        let img_bytes = subscriber.recv_bytes(0).unwrap();
+
+        // Base64 encode the image bytes to send to frontend
+        let base64_img = base64.encode(&img_bytes);
+
+        // Send to frontend
+        println!("Received image bytes, emitting event");
+        app_handle.emit("image-frame", base64_img).unwrap();
+
+        thread::sleep(Duration::from_millis(100)); // ~10 fps
+    }
+});
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
@@ -70,6 +101,13 @@ pub fn run() {
           ns_window.setBackgroundColor_(bg_color);
         }
       }
+
+      let app_handle = app.handle();
+
+      // app_handle.listen("frontend-ready", move |_| {
+      println!("Frontend ready, starting ZMQ stream...");
+      start_zmq_receiver(app_handle.clone());
+      // });
 
       Ok(())
     })

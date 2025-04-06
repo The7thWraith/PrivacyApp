@@ -1,6 +1,7 @@
 import React, { useRef, useState, useEffect } from "react";
 import Button from "./Button";
 import { invoke } from "@tauri-apps/api/core";
+import { listen } from "@tauri-apps/api/event";
 
 interface WebcamProps {
 	width?: number;
@@ -25,6 +26,8 @@ const Webcam: React.FC<WebcamProps> = ({
 
 	// Store active stream reference at module level to ensure it's always accessible
 	const streamRef = useRef<MediaStream | null>(null);
+
+	const [imgSrc, setImgSrc] = useState<string | null>(null);
 
 	// Guaranteed stream cleanup function
 	const stopAllTracks = () => {
@@ -222,6 +225,20 @@ const Webcam: React.FC<WebcamProps> = ({
 		}
 	}, [id]);
 
+	useEffect(() => {
+		console.log("Setting up event listener for image frame");
+
+		const unlisten = listen<string>("image-frame", (event) => {
+			const base64 = event.payload;
+			console.log("Received image frame:", base64);
+			setImgSrc(`data:image/jpeg;base64,${base64}`);
+		});
+
+		return () => {
+			unlisten.then((fn) => fn());
+		};
+	}, []);
+
 	return (
 		<div className="h-full w-full flex flex-col justify-between">
 			{error && <div className="text-red-500 p-4">{error}</div>}
@@ -238,7 +255,7 @@ const Webcam: React.FC<WebcamProps> = ({
 			{step === "streaming" && (
 				<>
 					<div className="flex-grow flex items-center justify-center">
-						<video
+						{/* <video
 							ref={videoRef}
 							width={width}
 							height={height}
@@ -246,7 +263,17 @@ const Webcam: React.FC<WebcamProps> = ({
 							playsInline
 							autoPlay
 							className="max-w-full max-h-full"
-						/>
+						/> */}
+
+						{imgSrc ? (
+							<img
+								src={imgSrc}
+								alt="Live feed"
+								className="rounded-xl shadow-lg w-full max-w-xl"
+							/>
+						) : (
+							<p>Waiting for image stream...</p>
+						)}
 					</div>
 					<div className="pb-4 flex justify-center space-x-4">
 						<Button onClick={captureImage}>Take Photo</Button>
