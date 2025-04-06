@@ -9,7 +9,7 @@ const Welcome = () => {
 		<div>
 			<p>Welcome</p>
 
-			
+			<button onClick={() => navigate("/home")}>Go to Home</button>
 		</div>
 	);
 };
