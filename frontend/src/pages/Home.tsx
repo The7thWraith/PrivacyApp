@@ -14,6 +14,7 @@ interface ActiveFilters {
 	cardsIds: boolean;
 	streetSigns: boolean;
 	licensePlates: boolean;
+	faces: boolean;
 }
 
 interface SelectedValues {
@@ -204,21 +205,12 @@ function Home() {
 							onSelect={handleSelect}
 						/>
 
-						<DropdownOption
-							id="privacyLevel"
-							label="Privacy Level"
-							value={selectedValues.privacyLevel}
-							options={["Silent"]}
-							isOpen={openDropdown === "privacyLevel"}
-							onToggle={toggleDropdown}
-							onSelect={handleSelect}
-						/>
-
+					
 						<Slider
 							id="slider1"
 							label="Confidence"
 							value={sliderValue}
-							min={70}
+							min={50}
 							max={95}
 							onSliderChange={handleSliderChange}
 						/>
@@ -268,6 +260,13 @@ function Home() {
 										active={activeFilters.licensePlates}
 										onClick={() =>
 											toggleFilter("licensePlates")
+										}
+									/>
+										<FilterButton
+										label="Faces"
+										active={activeFilters.faces}
+										onClick={() =>
+											toggleFilter("faces")
 										}
 									/>
 								</div>
