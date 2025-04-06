@@ -1,5 +1,6 @@
 import React, { useRef, useState, useEffect } from "react";
 import Button from "./Button";
+import { invoke } from "@tauri-apps/api/core";
 
 interface WebcamProps {
 	width?: number;
@@ -21,7 +22,7 @@ const Webcam: React.FC<WebcamProps> = ({
 	const [step, setStep] = useState<
 		"initial" | "streaming" | "captured" | "confirmed" | "normal"
 	>("initial");
-	
+
 	// Store active stream reference at module level to ensure it's always accessible
 	const streamRef = useRef<MediaStream | null>(null);
 
@@ -29,18 +30,28 @@ const Webcam: React.FC<WebcamProps> = ({
 	const stopAllTracks = () => {
 		// First, stop any tracks in our stored stream reference
 		if (streamRef.current) {
-			streamRef.current.getTracks().forEach(track => {
-				console.log("Stopping track:", track.kind, track.id, track.readyState);
+			streamRef.current.getTracks().forEach((track) => {
+				console.log(
+					"Stopping track:",
+					track.kind,
+					track.id,
+					track.readyState
+				);
 				track.stop();
 			});
 			streamRef.current = null;
 		}
-		
+
 		// Also check video element's srcObject as a backup
 		if (videoRef.current && videoRef.current.srcObject) {
 			const stream = videoRef.current.srcObject as MediaStream;
-			stream.getTracks().forEach(track => {
-				console.log("Stopping track from video:", track.kind, track.id, track.readyState);
+			stream.getTracks().forEach((track) => {
+				console.log(
+					"Stopping track from video:",
+					track.kind,
+					track.id,
+					track.readyState
+				);
 				track.stop();
 			});
 			videoRef.current.srcObject = null;
@@ -50,20 +61,20 @@ const Webcam: React.FC<WebcamProps> = ({
 	const stopWebcam = () => {
 		// Log state before stopping
 		console.log("Stopping webcam. Current state:", { step, isStreaming });
-		
+
 		// Stop all media tracks
 		stopAllTracks();
-		
+
 		// Update state
 		setIsStreaming(false);
 	};
 
 	const startWebcam = async () => {
 		console.log("Starting webcam");
-		
+
 		// Always stop any existing streams first
 		stopAllTracks();
-		
+
 		// Ensure we're in streaming state
 		setStep("streaming");
 		setError(null);
@@ -79,9 +90,11 @@ const Webcam: React.FC<WebcamProps> = ({
 				},
 				audio: false
 			});
-			
-			console.log("Camera access granted. Track states:", 
-				stream.getTracks().map(t => `${t.kind}: ${t.readyState}`));
+
+			console.log(
+				"Camera access granted. Track states:",
+				stream.getTracks().map((t) => `${t.kind}: ${t.readyState}`)
+			);
 
 			// Store stream reference
 			streamRef.current = stream;
@@ -118,7 +131,7 @@ const Webcam: React.FC<WebcamProps> = ({
 		}
 	};
 
-	const captureImage = () => {
+	const captureImage = async () => {
 		if (!videoRef.current) return;
 
 		const canvas = document.createElement("canvas");
@@ -131,9 +144,16 @@ const Webcam: React.FC<WebcamProps> = ({
 		ctx.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
 
 		const imageDataUrl = canvas.toDataURL("image/jpeg");
+
+		const response = await invoke("send_zmq_message", {
+			message: imageDataUrl
+		});
+
+		console.log("Response from server:", response);
+
 		setCapturedImage(imageDataUrl);
 		setStep("captured");
-		
+
 		// Always stop webcam after capturing
 		stopAllTracks();
 	};
@@ -148,14 +168,14 @@ const Webcam: React.FC<WebcamProps> = ({
 	const retakeImage = async () => {
 		// Ensure we completely reset the state before restarting
 		setCapturedImage(null);
-		
+
 		try {
 			// Explicitly set step to initial to reset everything
 			setStep("initial");
-			
+
 			// Add a small delay to ensure state is reset
-			await new Promise(resolve => setTimeout(resolve, 100));
-			
+			await new Promise((resolve) => setTimeout(resolve, 100));
+
 			// Start the webcam
 			await startWebcam();
 		} catch (err) {
@@ -181,23 +201,23 @@ const Webcam: React.FC<WebcamProps> = ({
 	// Add effect handler for each state change
 	useEffect(() => {
 		console.log("Step changed to:", step);
-		
+
 		// Stop camera when entering states that shouldn't have camera active
 		if (["initial", "captured", "confirmed"].includes(step)) {
 			stopAllTracks();
 		}
 	}, [step]);
-	
+
 	// When id changes, restart the camera
 	useEffect(() => {
 		if (id && (step === "streaming" || step === "normal")) {
 			const restartCamera = async () => {
 				stopAllTracks();
 				// Small delay to ensure camera is fully stopped
-				await new Promise(resolve => setTimeout(resolve, 500));
+				await new Promise((resolve) => setTimeout(resolve, 500));
 				startWebcam();
 			};
-			
+
 			restartCamera();
 		}
 	}, [id]);
@@ -230,10 +250,14 @@ const Webcam: React.FC<WebcamProps> = ({
 					</div>
 					<div className="pb-4 flex justify-center space-x-4">
 						<Button onClick={captureImage}>Take Photo</Button>
-						<Button onClick={() => {
-							stopAllTracks();
-							setStep("initial");
-						}}>Cancel</Button>
+						<Button
+							onClick={() => {
+								stopAllTracks();
+								setStep("initial");
+							}}
+						>
+							Cancel
+						</Button>
 					</div>
 				</>
 			)}
@@ -285,10 +309,14 @@ const Webcam: React.FC<WebcamProps> = ({
 						/>
 					</div>
 					<div className="pb-4 flex justify-center space-x-4">
-						<Button onClick={() => {
-							stopAllTracks();
-							setStep("initial");
-						}}>Stop Camera</Button>
+						<Button
+							onClick={() => {
+								stopAllTracks();
+								setStep("initial");
+							}}
+						>
+							Stop Camera
+						</Button>
 					</div>
 				</>
 			)}

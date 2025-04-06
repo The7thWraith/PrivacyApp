@@ -1,6 +1,6 @@
 import "../App.css";
 
-import React, { useEffect, useState } from "react";
+import React, { startTransition, useEffect, useState } from "react";
 import WebSocket from "@tauri-apps/plugin-websocket";
 import Webcam from "../components/Webcam";
 import Slider from "../components/sliddddddeeeeerrrrrrrr";
@@ -8,7 +8,7 @@ import FilterButton from "../components/FilterButton";
 import DropdownOption from "../components/DropdownOption";
 import LoadingScreen from "../components/LoadingScreen";
 
-import { invoke } from '@tauri-apps/api/core';
+import { invoke } from "@tauri-apps/api/core";
 
 interface ActiveFilters {
 	cardsIds: boolean;
@@ -52,8 +52,10 @@ function Home() {
 	};
 
 	const handleSelect = (id: string, option: string) => {
-		setSelectedValues({ ...selectedValues, [id]: option });
 		setOpenDropdown(null);
+		startTransition(() => {
+			setSelectedValues((prev) => ({ ...prev, [id]: option }));
+		});
 	};
 
 	const handleSliderChange = (value: number) => {
@@ -122,27 +124,6 @@ function Home() {
 			}
 		};
 
-		const sendSettings = async () => {
-			try {
-				// setLoading(true);
-				const response = await invoke('start_zmq_server');
-				console.log(response); // "Server started" or any server response
-
-				// setWsConnection(ws);
-				// const settingsWithFilters = {
-				// 	...selectedValues,
-				// 	filters: activeFilters
-				// };
-				// await ws.send(JSON.stringify(settingsWithFilters));
-				// ws.addListener((message) => {
-				// 	console.log("Received message from server:", message);
-				// });
-			} catch (err: any) {
-				setError(`Failed to connect to video server: ${err.message}`);
-			}
-		};
-
-		sendSettings();
 		requestCameraAccess();
 
 		return () => {
@@ -151,6 +132,19 @@ function Home() {
 			}
 		};
 	}, [selectedValues, activeFilters, firstLoad]);
+
+	useEffect(() => {
+		const timeout = setTimeout(() => {
+			invoke("send_zmq_message", {
+				message: JSON.stringify({
+					...selectedValues,
+					filters: activeFilters
+				})
+			}).catch(console.error);
+		}, 500);
+
+		return () => clearTimeout(timeout);
+	}, [selectedValues, activeFilters]);
 
 	const filterTransitionClass = filtersVisible
 		? "duration-350"
@@ -175,10 +169,12 @@ function Home() {
 							value={selectedValues.camera}
 							options={cameras.map((camera) => {
 								const label = camera.label || "Unnamed Camera";
-								const shortLabel = label.length > 20 ? label.slice(0, 18) + "..." : label;
+								const shortLabel =
+									label.length > 20
+										? label.slice(0, 18) + "..."
+										: label;
 								return shortLabel;
 							})}
-							
 							isOpen={openDropdown === "camera"}
 							onToggle={toggleDropdown}
 							onSelect={handleSelect}

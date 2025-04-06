@@ -20,4 +20,4 @@ while True:
     result = compare_faces(first_frame, current_frame)
     
     response = json.dumps(result).encode('utf-8')
-    socket.send(response)
+    socket.send(msg)

@@ -1,22 +1,40 @@
-use tauri::{command, State};
-use zmq::Context;
+use tauri::{command, generate_handler, WebviewWindowBuilder, WebviewUrl, TitleBarStyle};
+use serde::{Serialize, Deserialize};
+
+#[derive(Serialize, Deserialize)]
+struct ZmqResponse {
+    message: String,
+}
 
 #[command]
-fn start_zmq_server() -> Result<String, String> {
-    let context = Context::new();
-    let socket = context.socket(zmq::REP).map_err(|e| e.to_string())?;
-
-    // Bind the socket to a TCP address
-    socket.bind("tcp://127.0.0.1:5555").map_err(|e| e.to_string())?;
-
-    loop {
-        let msg = socket.recv_string(0).map_err(|e| e.to_string())?;
-        if let Some(msg) = msg {
-            println!("Received message: {}", msg);
-            socket.send("Hello from server", 0).map_err(|e| e.to_string())?;
-        }
+fn send_zmq_message(message: String) -> Result<String, String> {
+    let context = zmq::Context::new();
+    let socket = context.socket(zmq::REQ).unwrap();
+    
+    // Set timeouts
+    socket.set_linger(0).unwrap();
+    socket.set_rcvtimeo(2000).unwrap();
+    socket.set_sndtimeo(2000).unwrap();
+    
+    // Connect to Java server
+    if let Err(e) = socket.connect("tcp://127.0.0.1:5555") {
+        return Err(format!("Failed to connect: {}", e));
     }
-    Ok("Server started".to_string())
+    
+    // Send message
+    if let Err(e) = socket.send(message.as_bytes(), 0) {
+        return Err(format!("Failed to send: {}", e));
+    }
+    
+    // Get response
+    let mut response = zmq::Message::new();
+    match socket.recv(&mut response, 0) {
+        Ok(_) => {
+            let response_str = String::from_utf8_lossy(&response).to_string();
+            Ok(response_str)
+        },
+        Err(e) => Err(format!("Failed to receive: {}", e))
+    }
 }
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
@@ -56,7 +74,7 @@ pub fn run() {
       Ok(())
     })
     .plugin(tauri_plugin_websocket::init())
-    .invoke_handler(generate_handler![start_zmq_server])
+    .invoke_handler(generate_handler![send_zmq_message])
     .run(tauri::generate_context!())
     .expect("error while running tauri application");
 }
