@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import "./App.css";
 import WebSocket from "@tauri-apps/plugin-websocket";
 import Webcam from "./components/Webcam";
-import DropdownOption from "./components/DropdownItem";
 import Slider from "./components/sliddddddeeeeerrrrrrrr";
 import Shield from '/assets/shield.svg';
 interface FilterButtonProps {
@@ -88,7 +87,6 @@ const DropdownOption: React.FC<DropdownOptionProps> = ({
     </div>
   );
 };
-import FilterButton from "./components/FilterButton";
 
 interface ActiveFilters {
   cardsIds: boolean;
