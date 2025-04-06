@@ -173,9 +173,12 @@ function Home() {
 							id="camera"
 							label="Camera"
 							value={selectedValues.camera}
-							options={cameras.map(
-								(camera) => camera.label || "Unnamed Camera"
-							)}
+							options={cameras.map((camera) => {
+								const label = camera.label || "Unnamed Camera";
+								const shortLabel = label.length > 20 ? label.slice(0, 18) + "..." : label;
+								return shortLabel;
+							})}
+							
 							isOpen={openDropdown === "camera"}
 							onToggle={toggleDropdown}
 							onSelect={handleSelect}

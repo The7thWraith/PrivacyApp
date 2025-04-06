@@ -28,7 +28,9 @@ const DropdownOption: React.FC<DropdownOptionProps> = ({
 				<span className="text-gray-300">{label}</span>
 				<div className="flex items-center gap-2">
 					<span className="text-white font-medium truncate">
-						{value}
+					{value.length > 20
+    ? value.slice(0, 18) + "..."
+    : value}
 					</span>
 					<svg
 						xmlns="http://www.w3.org/2000/svg"
