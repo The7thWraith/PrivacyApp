@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import "./App.css";
 import WebSocket from "@tauri-apps/plugin-websocket";
-import Webcam from "./Webcam";
+import Webcam from "./components/Webcam";
+import DropdownOption from "./components/DropdownItem";
 import Slider from "./components/sliddddddeeeeerrrrrrrr";
 import Shield from '/assets/shield.svg';
 interface FilterButtonProps {
@@ -87,6 +88,7 @@ const DropdownOption: React.FC<DropdownOptionProps> = ({
     </div>
   );
 };
+import FilterButton from "./components/FilterButton";
 
 interface ActiveFilters {
   cardsIds: boolean;
@@ -195,8 +197,8 @@ function App() {
       }
     };
 
-    sendSettings();
-    requestCameraAccess();
+		// sendSettings();
+		requestCameraAccess();
 
     return () => {
       if (wsConnection) {
@@ -311,18 +313,25 @@ function App() {
           </div>
         </div>
 
-        <div className="w-3/5 ml-6 flex items-center">
-          <div className="bg-neutral-700 rounded-2xl h-[75%] w-full">
-            {error ? (
-              <div className="text-red-500 p-4">{error}</div>
-            ) : (
-              <Webcam />
-            )}
-          </div>
-        </div>
-      </div>
-    </div>
-  );
+				<div className="w-3/5 ml-6 flex items-center">
+					<div className="bg-neutral-700 rounded-2xl h-[75%] w-full">
+						{error ? (
+							<div className="text-red-500 p-4">{error}</div>
+						) : (
+							<Webcam
+								id={
+									cameras.find(
+										(cam) =>
+											cam.label === selectedValues.camera
+									)?.deviceId
+								}
+							/>
+						)}
+					</div>
+				</div>
+			</div>
+		</div>
+	);
 }
 
 export default App;

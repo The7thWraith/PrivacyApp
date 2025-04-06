@@ -1,73 +1,65 @@
-import React, { useEffect } from "react";
+import React from 'react'
+interface DropdownOptionProps {
+	id: string;
+	label: string;
+	value: string;
+	options: string[];
+	isOpen: boolean;
+	onToggle: (id: string) => void;
+	onSelect: (id: string, option: string) => void;
+  }
 
-const DropdownOption = ({
-	id,
-	label,
-	value,
-	options,
-	isOpen,
-	onToggle,
-	onSelect
+const DropdownOption: React.FC<DropdownOptionProps> = ({
+  id,
+  label,
+  value,
+  options,
+  isOpen,
+  onToggle,
+  onSelect
 }) => {
-	return (
-		<div className="flex items-center justify-between bg-neutral-700 rounded-lg p-3 mb-6 w-full relative">
-			<span className="text-gray-300">{label}</span>
-			<div
-				className="flex items-center bg-neutral-700 gap-2 cursor-pointer max-w-[65%] overflow-hidden"
-				onClick={() => onToggle(id)}
-			>
-				<span className="text-white font-medium truncate">{value}</span>
-				<svg
-					xmlns="http://www.w3.org/2000/svg"
-					height="24px"
-					viewBox="0 -960 960 960"
-					width="24px"
-					fill="#e3e3e3"
-					className={`transform transition-transform duration-300 flex-shrink-0 ${
-						isOpen ? "rotate-180" : ""
-					}`}
-				>
-					<path d="M480-344 240-584l56-56 184 184 184-184 56 56-240 240Z" />
-				</svg>
-			</div>
-
-			<div
-				className={`absolute right-0 w-64 bg-neutral-800 border-none rounded-md shadow-lg overflow-hidden z-10 top-full
-           transition-all duration-300 origin-top ${
-				isOpen
-					? "opacity-100 scale-y-100"
-					: "opacity-0 scale-y-0 pointer-events-none"
-			}`}
-			>
-				<div className="py-0 max-h-48 overflow-y-auto">
-					{options.map((option, index) => {
-						const isFirst = index === 0;
-						const isLast = index === options.length - 1;
-
-						return (
-							<div
-								key={option}
-								className={`
-                  px-4 py-2 text-sm cursor-pointer truncate
-                  ${index !== 0 ? "border-t border-gray-700" : ""}
-                  ${
-						value === option
-							? `bg-blue-500 text-white ${
-									isFirst ? "rounded-t-md" : ""
-							  } ${isLast ? "rounded-b-md" : ""}`
-							: "text-gray-200 hover:bg-neutral-700"
-					}
-                `}
-								onClick={() => onSelect(id, option)}
-							>
-								{option}
-							</div>
-						);
-					})}
-				</div>
-			</div>
+  const transitionClass = isOpen ? "duration-350" : "duration-200";
+  return (
+	<div className="mb-4">
+	  <div 
+		className="flex items-center justify-between bg-neutral-700 rounded-lg p-4 cursor-pointer"
+		onClick={() => onToggle(id)}
+	  >
+		<span className="text-gray-300">{label}</span>
+		<div className="flex items-center gap-2">
+		  <span className="text-white font-medium truncate">{value}</span>
+		  <svg
+			xmlns="http://www.w3.org/2000/svg"
+			height="24px"
+			viewBox="0 -960 960 960"
+			width="24px"
+			fill="#e3e3e3"
+			className={`transform transition-transform duration-300 ${isOpen ? "rotate-180" : ""}`}
+		  >
+			<path d="M480-344 240-584l56-56 184 184 184-184 56 56-240 240Z" />
+		  </svg>
 		</div>
-	);
+	  </div>
+
+	  <div 
+		className={`mt-1 bg-black w-full rounded-lg shadow-lg overflow-hidden transition-all ease-in-out ${transitionClass} ${
+		  isOpen ? "opacity-100 max-h-96" : "opacity-0 max-h-0 pointer-events-none"
+		}`}
+	  >
+		{options.map((option, index) => (
+		  <div
+			key={option}
+			className={`px-4 py-3 cursor-pointer transition-colors duration-200 ${
+			  index !== 0 ? "border-t border-gray-800" : ""
+			} ${value === option ? "bg-blue-500 text-white" : "text-gray-200 hover:bg-neutral-900"}`}
+			onClick={() => onSelect(id, option)}
+		  >
+			{option}
+		  </div>
+		))}
+	  </div>
+	</div>
+  );
 };
 
 export default DropdownOption;
