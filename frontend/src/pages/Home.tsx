@@ -273,11 +273,7 @@ function Home() {
 							</div>
 						</div>
 						
-						<div 
-							className={`transition-all duration-300 ease-in-out ${
-								activeFilters.faces ? 'opacity-100 h-auto mt-2 visible mb-2' : 'opacity-0 h-0 overflow-hidden invisible'
-							}`}
-						>
+						{activeFilters.faces && (
 							<div className="bg-neutral-700 rounded-lg p-2 mb-2">
 								<h3 className="text-gray-300 px-2 py-1 mb-2 text-sm font-medium">Face Blur Options</h3>
 								<DropdownOption
@@ -300,7 +296,7 @@ function Home() {
 									onSelect={handleSelect}
 								/>
 							</div>
-						</div>
+						)}
 
 						<button
 							onClick={showLoadingScreen}
