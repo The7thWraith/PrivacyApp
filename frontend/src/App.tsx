@@ -132,30 +132,8 @@ function App() {
       }
     };
 
-    const startReceivingVideo = async () => {
-      try {
-        console.log("Connecting to WebSocket...");
-        const ws = await WebSocket.connect('wss://example.com');
-        
-        setWsConnection(ws);
-        
-        // Send initial message
-        await ws.send('Hello World');
-        
-        // Set up message listener
-        ws.addListener((message) => {
-          console.log("Received message from server:", message);
-        });
-        
-        console.log("WebSocket connection established successfully");
-      } catch (err) {
-        console.error("Error connecting to WebSocket:", err);
-        setError(`Failed to connect to video server: ${err.message}`);
-      }
-    };
-
+   
     requestCameraAccess();
-    startReceivingVideo();
     
     return () => {
       if (wsConnection) {
@@ -164,6 +142,36 @@ function App() {
       }
     };
   }, []);
+  useEffect(() => {
+	const sendSettings = async () => {
+	  try {
+	    console.log("Connecting to WebSocket...");
+	    const ws = await WebSocket.connect('wss://example.com');
+	    
+	    setWsConnection(ws);
+	    
+	    await ws.send(selectedValues.toString());
+	    // Set up message listener
+	    ws.addListener((message) => {
+		console.log("Received message from server:", message);
+	    });
+	    
+	    console.log("WebSocket connection established successfully");
+	  } catch (err) {
+	    console.error("Error connecting to WebSocket:", err);
+	    setError(`Failed to connect to video server: ${err.message}`);
+	  }
+	};
+  
+	sendSettings();
+	return () => {
+	  if (wsConnection) {
+	    wsConnection.close();
+	    console.log("WebSocket connection closed");
+	  }
+	};
+    }, [selectedValues]);
+  
 
   return (
     <div className="w-full h-screen bg-neutral-800 p-4 pt-0 flex flex-col">
