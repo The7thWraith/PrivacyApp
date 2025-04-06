@@ -22,6 +22,8 @@ interface SelectedValues {
 	blur: string;
 	border: string;
 	privacyLevel: string;
+	exclusion: string;
+	fullbody: string;
 }
 
 function Home() {
@@ -36,7 +38,8 @@ function Home() {
 	const [activeFilters, setActiveFilters] = useState<ActiveFilters>({
 		cardsIds: false,
 		streetSigns: false,
-		licensePlates: false
+		licensePlates: false,
+		faces: false
 	});
 
 	const [firstLoad, setFirstLoad] = useState(true);
@@ -45,7 +48,9 @@ function Home() {
 		camera: "Loading...",
 		blur: "Soft",
 		border: "None",
-		privacyLevel: "Silent"
+		privacyLevel: "Silent",
+		exclusion: "Subject",
+		fullbody: "Face"
 	});
 
 	const toggleDropdown = (id: string) => {
@@ -156,7 +161,7 @@ function Home() {
 			{showLoading && <LoadingScreen onFinished={hideLoadingScreen} />}
 			<div className="flex flex-1 overflow-hidden">
 				<div className="w-2/5 relative">
-					<div className="absolute top-0 bottom-0 left-0 right-[-20px] pt-5 flex flex-col overflow-y-scroll">
+					<div className="absolute top-0 bottom-0 left-0 right-[-20px] pt-5 flex flex-col overflow-y-auto pb-4">
 						<div className="w-full text-center p-4">
 							<h1 className="text-white text-2xl font-medium">
 								Privacy Filter
@@ -201,7 +206,6 @@ function Home() {
 							onSelect={handleSelect}
 						/>
 
-					
 						<Slider
 							id="slider1"
 							label="Confidence"
@@ -258,7 +262,7 @@ function Home() {
 											toggleFilter("licensePlates")
 										}
 									/>
-										<FilterButton
+									<FilterButton
 										label="Faces"
 										active={activeFilters.faces}
 										onClick={() =>
@@ -266,6 +270,35 @@ function Home() {
 										}
 									/>
 								</div>
+							</div>
+						</div>
+						
+						<div 
+							className={`transition-all duration-300 ease-in-out ${
+								activeFilters.faces ? 'opacity-100 h-auto mt-2 visible mb-2' : 'opacity-0 h-0 overflow-hidden invisible'
+							}`}
+						>
+							<div className="bg-neutral-700 rounded-lg p-2 mb-2">
+								<h3 className="text-gray-300 px-2 py-1 mb-2 text-sm font-medium">Face Blur Options</h3>
+								<DropdownOption
+									id="exclusion"
+									label="Exclusion"
+									value={selectedValues.exclusion}
+									options={["Subject", "None"]}
+									isOpen={openDropdown === "exclusion"}
+									onToggle={toggleDropdown}
+									onSelect={handleSelect}
+								/>
+								
+								<DropdownOption
+									id="fullbody"
+									label="Blur Choice"
+									value={selectedValues.fullbody}
+									options={["Face", "Full Body"]}
+									isOpen={openDropdown === "fullbody"}
+									onToggle={toggleDropdown}
+									onSelect={handleSelect}
+								/>
 							</div>
 						</div>
 
