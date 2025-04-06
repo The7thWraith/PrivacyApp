@@ -393,12 +393,12 @@ function Home() {
 							</div>
 						)}
 
-							<button
+							{/* <button
 								onClick={showLoadingScreen}
 								className="mt-4 mb-6 mx-auto bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-6 rounded-lg transition-colors duration-200"
 							>
 								Show Loading Screen
-							</button>
+							</button> */}
 						</div>
 					</div>
 
