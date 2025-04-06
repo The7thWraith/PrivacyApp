@@ -19,7 +19,7 @@ interface ActiveFilters {
 
 interface SelectedValues {
 	camera: string;
-	blur: string;
+	blurBody: string;
 	border: string;
 	privacyLevel: string;
 	exclusion: string;
@@ -47,7 +47,7 @@ function Home() {
 
 	const [selectedValues, setSelectedValues] = useState<SelectedValues>({
 		camera: "Loading...",
-		blur: "Soft",
+		blurBody: "Soft",
 		border: "None",
 		privacyLevel: "Silent",
 		exclusion: "Subject",
@@ -152,7 +152,8 @@ function Home() {
 			invoke("send_zmq_message", {
 				message: JSON.stringify({
 					...selectedValues,
-					filters: activeFilters
+					filters: activeFilters,
+					confidence: sliderValue / 100,
 				})
 			}).catch(console.error);
 		}, 500);
@@ -214,7 +215,7 @@ function Home() {
 						<DropdownOption
 							id="blur"
 							label="Blur"
-							value={selectedValues.blur}
+							value={selectedValues.blurBody}
 							options={["Soft", "Hard"]}
 							isOpen={openDropdown === "blur"}
 							onToggle={toggleDropdown}

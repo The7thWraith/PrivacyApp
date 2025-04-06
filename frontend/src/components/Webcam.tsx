@@ -242,12 +242,12 @@ const Webcam: React.FC<WebcamProps> = ({
 	return (
 		<div className="h-full w-full flex flex-col justify-between">
 			{error && <div className="text-red-500 p-4">{error}</div>}
-			
+
 			{step === "initial" && (
-				<div className="flex-grow flex flex-col items-center justify-center">
-					<p className="text-white mb-4">
+				<div className="flex-grow flex flex-col items-center justify-end mb-4">
+					{/* <p className="text-white mb-4">
 						Click the button below to start your camera
-					</p>
+					</p> */}
 					<Button onClick={startWebcam}>Start Camera</Button>
 				</div>
 			)}
@@ -272,7 +272,36 @@ const Webcam: React.FC<WebcamProps> = ({
 								className="rounded-xl shadow-lg w-full max-w-xl"
 							/>
 						) : (
-							<p>Waiting for image stream...</p>
+							<div className="w-full flex justify-center">
+								<div className="relative w-48 h-1 bg-transparent overflow-hidden rounded-full">
+									<div className="absolute w-32 h-1 bg-white rounded-full animate-bounce-x"></div>
+								</div>
+								<style>
+									{`
+										@keyframes bounce-x {
+											0%, 100% {
+												transform: translateX(0);
+												width: 0%;
+											}
+											25% {
+												transform: translateX(50%);
+												width: 25%;
+											}
+											50% {
+												transform: translateX(100%);
+												width: 0%;
+											}
+											75% {
+												transform: translateX(150%);
+												width: 25%;
+											}
+										}
+										.animate-bounce-x {
+											animation: bounce-x 1.5s infinite;
+										}
+									`}
+								</style>
+							</div>
 						)}
 					</div>
 					<div className="pb-4 flex justify-center space-x-4">
