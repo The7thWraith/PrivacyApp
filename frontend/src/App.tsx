@@ -5,6 +5,7 @@ import Webcam from "./components/Webcam";
 import Slider from "./components/sliddddddeeeeerrrrrrrr";
 import FilterButton from "./components/FilterButton";
 import DropdownOption from "./components/DropdownOption";
+import LoadingScreen from "./components/LoadingScreen";
 
 // @ts-ignore
 import ShieldIcon from "./assets/shield.svg";
@@ -23,12 +24,21 @@ interface SelectedValues {
 }
 
 function App() {
+	const [isLoading, setIsLoading] = useState<boolean>(true);
 	const [openDropdown, setOpenDropdown] = useState<string | null>(null);
 	const [cameras, setCameras] = useState<MediaDeviceInfo[]>([]);
 	const [error, setError] = useState<string>("");
 	const [wsConnection, setWsConnection] = useState<WebSocket | null>(null);
 	const [filtersVisible, setFiltersVisible] = useState<boolean>(false);
 	const [sliderValue, setSliderValue] = useState<number>(50);
+	
+	// Function to show loading screen again for testing
+	const showLoadingScreen = () => {
+		setIsLoading(true);
+		setTimeout(() => {
+			setIsLoading(false);
+		}, 750);
+	};
 
 	const [activeFilters, setActiveFilters] = useState<ActiveFilters>({
 		cardsIds: false,
@@ -44,6 +54,15 @@ function App() {
 		border: "None",
 		privacyLevel: "Silent"
 	});
+
+	useEffect(() => {
+		// Show loading screen for 2 seconds regardless of application state
+		const timer = setTimeout(() => {
+			setIsLoading(false);
+		}, 750);
+
+		return () => clearTimeout(timer);
+	}, []);
 
 	const toggleDropdown = (id: string) => {
 		setOpenDropdown(openDropdown === id ? null : id);
@@ -144,6 +163,15 @@ function App() {
 
 	return (
 		<div className="w-full h-screen bg-neutral-800 p-4 pt-0 flex flex-col">
+			{isLoading && <LoadingScreen />}
+			<div className="flex justify-end mb-2">
+				<button 
+					onClick={showLoadingScreen}
+					className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded transition-colors duration-200"
+				>
+					Test Loading Screen
+				</button>
+			</div>
 			<div className="flex flex-1 overflow-hidden">
 				<div className="w-2/5 relative">
 					<div className="absolute top-0 bottom-0 left-0 right-[-20px] pt-5 flex flex-col overflow-y-scroll">
