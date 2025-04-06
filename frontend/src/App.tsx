@@ -265,8 +265,7 @@ function App() {
               max={100}
               onSliderChange={handleSliderChange}
             />
-
-            <div className="mb-4">
+            <div className="mb-2 bg-neutral-700 rounded-lg">
               <div 
                 className="flex items-center justify-between bg-neutral-700 rounded-lg p-4 cursor-pointer"
                 onClick={() => setFiltersVisible(!filtersVisible)}
@@ -286,11 +285,11 @@ function App() {
                 </svg>
               </div>
               <div
-                className={`mt-1 bg-black rounded-lg w-full overflow-hidden transition-all ease-in-out ${filterTransitionClass} ${
+                className={`mt-1 bg-neutral-700 rounded-lg w-full overflow-hidden transition-all ease-in-out ${filterTransitionClass} ${
                   filtersVisible ? "opacity-100 max-h-96" : "opacity-0 max-h-0 pointer-events-none"
                 }`}
               >
-                <div className="p-4 flex flex-wrap gap-3">
+                <div className="p-4 flex flex-wrap gap-2">
                   <FilterButton
                     label="Cards/IDs"
                     active={activeFilters.cardsIds}
