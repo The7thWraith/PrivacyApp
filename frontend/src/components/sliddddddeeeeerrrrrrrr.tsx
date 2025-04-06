@@ -25,11 +25,12 @@ const Slider = ({ id, label, value, min, max, onSliderChange }) => {
 						style={{
 							appearance: 'none',
 							width: '100%',
-							height: '2px',
+							height: '3px',
 							borderRadius: '4px',
-							backgroundColor: '#8e8e8e', // Grey track
+							backgroundColor: '#2C2C2C', // Grey track
 							outline: 'none',
 							position: 'relative',
+                            // boxShadow: '1px 1px 1px rgba(0, 0, 0, 0.3)',
 						}}
 					/>
 				</div>
