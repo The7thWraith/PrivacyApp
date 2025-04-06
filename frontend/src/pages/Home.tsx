@@ -8,8 +8,7 @@ import FilterButton from "../components/FilterButton";
 import DropdownOption from "../components/DropdownOption";
 import LoadingScreen from "../components/LoadingScreen";
 
-// @ts-ignore
-import ShieldIcon from "./assets/shield.svg";
+import { invoke } from '@tauri-apps/api/core';
 
 interface ActiveFilters {
 	cardsIds: boolean;
@@ -125,22 +124,25 @@ function Home() {
 
 		const sendSettings = async () => {
 			try {
-				const ws = await WebSocket.connect("wss://example.com");
-				setWsConnection(ws);
-				const settingsWithFilters = {
-					...selectedValues,
-					filters: activeFilters
-				};
-				await ws.send(JSON.stringify(settingsWithFilters));
-				ws.addListener((message) => {
-					console.log("Received message from server:", message);
-				});
+				// setLoading(true);
+				const response = await invoke('start_zmq_server');
+				console.log(response); // "Server started" or any server response
+
+				// setWsConnection(ws);
+				// const settingsWithFilters = {
+				// 	...selectedValues,
+				// 	filters: activeFilters
+				// };
+				// await ws.send(JSON.stringify(settingsWithFilters));
+				// ws.addListener((message) => {
+				// 	console.log("Received message from server:", message);
+				// });
 			} catch (err: any) {
 				setError(`Failed to connect to video server: ${err.message}`);
 			}
 		};
 
-		// sendSettings();
+		sendSettings();
 		requestCameraAccess();
 
 		return () => {
@@ -268,7 +270,7 @@ function Home() {
 								</div>
 							</div>
 						</div>
-						
+
 						<button
 							onClick={showLoadingScreen}
 							className="mt-4 mb-6 mx-auto bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-6 rounded-lg transition-colors duration-200"
@@ -300,4 +302,3 @@ function Home() {
 }
 
 export default Home;
-

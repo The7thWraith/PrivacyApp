@@ -1,4 +1,23 @@
-use tauri::{TitleBarStyle, WebviewUrl, WebviewWindowBuilder};
+use tauri::{command, State};
+use zmq::Context;
+
+#[command]
+fn start_zmq_server() -> Result<String, String> {
+    let context = Context::new();
+    let socket = context.socket(zmq::REP).map_err(|e| e.to_string())?;
+
+    // Bind the socket to a TCP address
+    socket.bind("tcp://127.0.0.1:5555").map_err(|e| e.to_string())?;
+
+    loop {
+        let msg = socket.recv_string(0).map_err(|e| e.to_string())?;
+        if let Some(msg) = msg {
+            println!("Received message: {}", msg);
+            socket.send("Hello from server", 0).map_err(|e| e.to_string())?;
+        }
+    }
+    Ok("Server started".to_string())
+}
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
@@ -37,6 +56,7 @@ pub fn run() {
       Ok(())
     })
     .plugin(tauri_plugin_websocket::init())
+    .invoke_handler(generate_handler![start_zmq_server])
     .run(tauri::generate_context!())
     .expect("error while running tauri application");
 }
