@@ -134,64 +134,64 @@ const Webcam: React.FC<WebcamProps> = ({
 		}
 	};
 
-	const captureImage = async () => {
-		if (!videoRef.current) return;
+	// const captureImage = async () => {
+	// 	if (!videoRef.current) return;
 
-		const canvas = document.createElement("canvas");
-		canvas.width = videoRef.current.videoWidth;
-		canvas.height = videoRef.current.videoHeight;
+	// 	const canvas = document.createElement("canvas");
+	// 	canvas.width = videoRef.current.videoWidth;
+	// 	canvas.height = videoRef.current.videoHeight;
 
-		const ctx = canvas.getContext("2d");
-		if (!ctx) return;
+	// 	const ctx = canvas.getContext("2d");
+	// 	if (!ctx) return;
 
-		ctx.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
+	// 	ctx.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
 
-		const imageDataUrl = canvas.toDataURL("image/jpeg");
+	// 	const imageDataUrl = canvas.toDataURL("image/jpeg");
 
-		const response = await invoke("send_zmq_message", {
-			message: imageDataUrl
-		});
+	// 	const response = await invoke("send_zmq_message", {
+	// 		message: imageDataUrl
+	// 	});
 
-		console.log("Response from server:", response);
+	// 	console.log("Response from server:", response);
 
-		setCapturedImage(imageDataUrl);
-		setStep("captured");
+	// 	setCapturedImage(imageDataUrl);
+	// 	setStep("captured");
 
-		// Always stop webcam after capturing
-		stopAllTracks();
-	};
+	// 	// Always stop webcam after capturing
+	// 	stopAllTracks();
+	// };
 
-	const confirmImage = () => {
-		if (capturedImage) {
-			localStorage.setItem("userImage", capturedImage);
-			setStep("confirmed");
-		}
-	};
+	// const confirmImage = () => {
+	// 	if (capturedImage) {
+	// 		localStorage.setItem("userImage", capturedImage);
+	// 		setStep("confirmed");
+	// 	}
+	// };
 
-	const retakeImage = async () => {
-		// Ensure we completely reset the state before restarting
-		setCapturedImage(null);
+	// const retakeImage = async () => {
+	// 	// Ensure we completely reset the state before restarting
+	// 	setCapturedImage(null);
 
-		try {
-			// Explicitly set step to initial to reset everything
-			setStep("initial");
+	// 	try {
+	// 		// Explicitly set step to initial to reset everything
+	// 		setStep("initial");
 
-			// Add a small delay to ensure state is reset
-			await new Promise((resolve) => setTimeout(resolve, 100));
+	// 		// Add a small delay to ensure state is reset
+	// 		await new Promise((resolve) => setTimeout(resolve, 100));
 
-			// Start the webcam
-			await startWebcam();
-		} catch (err) {
-			console.error("Failed to restart webcam:", err);
-			setError("Could not restart the webcam.");
-			setStep("initial");
-		}
-	};
+	// 		// Start the webcam
+	// 		await startWebcam();
+	// 	} catch (err) {
+	// 		console.error("Failed to restart webcam:", err);
+	// 		setError("Could not restart the webcam.");
+	// 		setStep("initial");
+	// 	}
+	// };
 
-	const continueSteps = () => {
-		startWebcam();
-		setStep("normal");
-	};
+	// const continueSteps = () => {
+	// 	startWebcam();
+	// 	setStep("normal");
+	// };
 
 	// Clean up on unmount - ALWAYS run this no matter what
 	useEffect(() => {
@@ -202,35 +202,35 @@ const Webcam: React.FC<WebcamProps> = ({
 	}, []);
 
 	// Add effect handler for each state change
-	useEffect(() => {
-		console.log("Step changed to:", step);
+	// useEffect(() => {
+	// 	console.log("Step changed to:", step);
 
-		// Stop camera when entering states that shouldn't have camera active
-		if (["initial", "captured", "confirmed"].includes(step)) {
-			stopAllTracks();
-		}
-	}, [step]);
+	// 	// Stop camera when entering states that shouldn't have camera active
+	// 	if (["initial", "captured", "confirmed"].includes(step)) {
+	// 		stopAllTracks();
+	// 	}
+	// }, [step]);
 
 	// When id changes, restart the camera
-	useEffect(() => {
-		if (id && (step === "streaming" || step === "normal")) {
-			const restartCamera = async () => {
-				stopAllTracks();
-				// Small delay to ensure camera is fully stopped
-				await new Promise((resolve) => setTimeout(resolve, 500));
-				startWebcam();
-			};
+	// useEffect(() => {
+	// 	if (id && (step === "streaming" || step === "normal")) {
+	// 		const restartCamera = async () => {
+	// 			stopAllTracks();
+	// 			// Small delay to ensure camera is fully stopped
+	// 			await new Promise((resolve) => setTimeout(resolve, 500));
+	// 			startWebcam();
+	// 		};
 
-			restartCamera();
-		}
-	}, [id]);
+	// 		restartCamera();
+	// 	}
+	// }, [id]);
 
 	useEffect(() => {
 		console.log("Setting up event listener for image frame");
 
 		const unlisten = listen<string>("image-frame", (event) => {
 			const base64 = event.payload;
-			console.log("Received image frame:", base64);
+			// console.log("Received image frame:", base64);
 			setImgSrc(`data:image/jpeg;base64,${base64}`);
 		});
 
@@ -242,7 +242,7 @@ const Webcam: React.FC<WebcamProps> = ({
 	return (
 		<div className="h-full w-full flex flex-col justify-between">
 			{error && <div className="text-red-500 p-4">{error}</div>}
-
+			
 			{step === "initial" && (
 				<div className="flex-grow flex flex-col items-center justify-center">
 					<p className="text-white mb-4">
@@ -276,73 +276,14 @@ const Webcam: React.FC<WebcamProps> = ({
 						)}
 					</div>
 					<div className="pb-4 flex justify-center space-x-4">
-						<Button onClick={captureImage}>Take Photo</Button>
 						<Button
 							onClick={() => {
 								stopAllTracks();
+
 								setStep("initial");
 							}}
 						>
 							Cancel
-						</Button>
-					</div>
-				</>
-			)}
-
-			{step === "captured" && (
-				<>
-					<div className="flex-grow flex items-center justify-center">
-						{capturedImage && (
-							<img
-								src={capturedImage}
-								alt="Captured"
-								className="max-w-full max-h-full"
-							/>
-						)}
-					</div>
-					<div className="pb-4 flex justify-center space-x-4">
-						<Button onClick={retakeImage}>Retake Photo</Button>
-						<Button onClick={confirmImage}>Confirm Photo</Button>
-					</div>
-				</>
-			)}
-
-			{step === "confirmed" && (
-				<div className="flex-grow flex flex-col items-center justify-center">
-					<div className="mb-4">
-						{capturedImage && (
-							<img
-								src={capturedImage}
-								alt="Confirmed"
-								className="max-w-full max-h-full rounded-lg"
-							/>
-						)}
-					</div>
-					<Button onClick={continueSteps}>Continue</Button>
-				</div>
-			)}
-
-			{step === "normal" && (
-				<>
-					<div className="flex-grow flex items-center justify-center">
-						<video
-							ref={videoRef}
-							width={width}
-							height={height}
-							muted
-							playsInline
-							autoPlay
-							className="max-w-full max-h-full"
-						/>
-					</div>
-					<div className="pb-4 flex justify-center space-x-4">
-						<Button
-							onClick={() => {
-								stopAllTracks();
-								setStep("initial");
-							}}
-						>
-							Stop Camera
 						</Button>
 					</div>
 				</>

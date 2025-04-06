@@ -79,7 +79,8 @@ function Home() {
 				...selectedValues,
 				filters: newActiveFilters,
 				confidence: sliderValue / 100,
-				// ignore_subject: newActiveFilters["faces"]
+				ignore_subject: selectedValues.exclusion === "Subject",
+				blurBody: selectedValues.fullbody === "Full Body",
 			};
 			try {
 				wsConnection.send(JSON.stringify(settingsWithFilters));
@@ -213,8 +214,8 @@ function Home() {
 							id="slider1"
 							label="Confidence"
 							value={sliderValue}
-							min={50}
-							max={95}
+							min={5}
+							max={90}
 							onSliderChange={handleSliderChange}
 						/>
 						<div className="mb-2 bg-neutral-700 rounded-lg">
@@ -265,7 +266,6 @@ function Home() {
 											toggleFilter("licensePlates")
 										}
 									/>
-									<FilterButton
 									<FilterButton
 										label="Faces"
 										active={activeFilters.faces}

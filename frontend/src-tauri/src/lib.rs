@@ -33,6 +33,8 @@ fn send_zmq_message(message: String) -> Result<String, String> {
     if let Err(e) = socket.send(message.as_bytes(), 0) {
         return Err(format!("Failed to send: {}", e));
     }
+
+    println!("Sent message: {}", message);
     
     // Get response
     let mut response = zmq::Message::new();
@@ -60,7 +62,7 @@ fn start_zmq_receiver(app_handle: AppHandle) {
         let base64_img = base64.encode(&img_bytes);
 
         // Send to frontend
-        println!("Received image bytes, emitting event");
+        // println!("Received image bytes, emitting event");
         app_handle.emit("image-frame", base64_img).unwrap();
 
         thread::sleep(Duration::from_millis(100)); // ~10 fps
